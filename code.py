@@ -4,9 +4,9 @@ from flask import Flask, render_template, request
 url = "https://roie-cosmos-vision.documents.azure.com:443/"
 key = '1OwJMb2Zs6YuxUIXQIIoMeAmtskfDwNsFBOUKJWKuf2icQjChm2iYCZ82m5wpCUnkGe9I2VgQ0JVACDbh3ZS9g=='
 client = CosmosClient(url, credential=key)
-database_name = 'roie-cosmos-vision'
+database_name = 'gpt4vresults-db'
 database = client.get_database_client(database_name)
-container_name = 'gpt4vresults-db'
+container_name = 'gptoutput'
 container = database.get_container_client(container_name)
 
 
