@@ -1,3 +1,4 @@
+#this is the code for the flask app that will be used to display the results of the GPT-3 model
 # Import necessary modules from azure.cosmos and flask
 from azure.cosmos import CosmosClient, PartitionKey, exceptions
 from flask import Flask, render_template, request
