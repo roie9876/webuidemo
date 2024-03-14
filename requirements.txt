@@ -99,11 +99,11 @@ typing_extensions==4.9.0
 tzdata==2024.1
 urllib3==2.2.0
 uvicorn==0.28.0
-webcamgpt==0.1.0
+
 websocket-client==1.7.0
 websockets==11.0.3
 Werkzeug==3.0.1
 wsproto==1.2.0
 yarl==1.9.4
-youtube-dl==2021.12.17
+
 zipp==3.17.0
