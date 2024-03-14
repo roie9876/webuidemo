@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Videos</title>
+</head>
+<body>
+    <h1>Videos</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <!-- Add more columns as needed based on the data in your database -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Use Jinja2 templating to loop through the videos and display them in the table -->
+            {% for video in videos %}
+            <tr>
+                <td>{{ video.title }}</td>
+                <td>{{ video.description }}</td>
+                <!-- Add more data fields as needed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
