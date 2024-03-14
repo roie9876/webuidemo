@@ -48,6 +48,8 @@ def add_video():
     # Return a success message
     return {'message': 'Video added'}, 201
 
+gunicorn --bind=0.0.0.0 --timeout 600 app:app
+
 # Run the Flask app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
