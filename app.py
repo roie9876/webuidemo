@@ -31,6 +31,8 @@ def index():
         query="SELECT * FROM c",
         enable_cross_partition_query=True
     ))
+    except Exception as e:
+    print(f"An error occurred: {e}")
 
     # Render them in the UI
     # Pass the videos to the index.html template
