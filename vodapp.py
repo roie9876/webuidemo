@@ -19,6 +19,32 @@ connection_string = os.getenv("BLOB_CONNECTION_STRING")
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 
 
+#upload file to blob 
+container_client_videoin = blob_service_client.get_container_client("videosin")
+
+# List all blobs in the container
+blob_list = container_client_videoin.list_blobs()
+
+# Display blobs in the UI
+for blob in blob_list:
+    st.write(blob.name)
+
+# File uploader widget
+uploaded_file = st.file_uploader("Choose a file")
+
+if uploaded_file is not None:
+    # Create a blob client for the uploaded file
+    blob_client = blob_service_client.get_blob_client("videosin", uploaded_file.name)
+
+    # Upload the file to the blob storage
+    blob_client.upload_blob(uploaded_file)
+
+
+
+
+connection_string = os.getenv("BLOB_CONNECTION_STRING")
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+
 # Get a reference to the container
 container_client = blob_service_client.get_container_client("videosprocessed")
 
