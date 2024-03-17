@@ -1,17 +1,23 @@
 #python3 -m venv .venv
 #source .venv/bin/activate
 #pip3 install streamlit
+import os
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.cosmos.exceptions as exceptions
 from azure.cosmos.http_constants import StatusCodes
 from azure.cosmos.partition_key import PartitionKey
 from azure.cosmos import CosmosClient, PartitionKey
+
+from openai import AzureOpenAI
 import streamlit as st
 
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 # Create a BlobServiceClient object
-blob_service_client = BlobServiceClient.from_connection_string("DefaultEndpointsProtocol=https;AccountName=roiestoragevision;AccountKey=BMxvrmMk1Ng+zNg/QJblbhDwd/qXHJGKpVCcuF1t+p6enTw3Ohy7ku/LXOY2Tfjf1BdddGqw2VOR+AStZviCmg==;EndpointSuffix=core.windows.net")
+
+connection_string = os.getenv("BLOB_CONNECTION_STRING")
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+
 
 # Get a reference to the container
 container_client = blob_service_client.get_container_client("videosprocessed")
@@ -24,12 +30,9 @@ blob_list = container_client.list_blobs()
 # </imports>
 
 # <environment_variables>
-ENDPOINT = "https://roie-cosmos-vision.documents.azure.com:443/"
-KEY = "1OwJMb2Zs6YuxUIXQIIoMeAmtskfDwNsFBOUKJWKuf2icQjChm2iYCZ82m5wpCUnkGe9I2VgQ0JVACDbh3ZS9g=="
+ENDPOINT = os.getenv("ENDPOINT")
+KEY = os.getenv("KEY")
 
-#ENDPOINT = os.environ["https://roie-cosmos-vision.documents.azure.com:443/"]
-#KEY = os.environ["1OwJMb2Zs6YuxUIXQIIoMeAmtskfDwNsFBOUKJWKuf2icQjChm2iYCZ82m5wpCUnkGe9I2VgQ0JVACDbh3ZS9g=="]
-# </environment_variables>
 
 # <constants>
 DATABASE_NAME = "gpt4vresults-db"
@@ -66,15 +69,28 @@ results = container.query_items(
 
 items = [item for item in results]
 
-import streamlit as st
-#st.write(items)
-import streamlit as st
+
+
+
+
+client = AzureOpenAI(
+  api_key = os.getenv("AZURE_OPENAI_API_KEY"),  
+  api_version = "2023-05-15",
+  azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")  # Your Azure OpenAI resource's endpoint value.
+)
+
+conversation=[{"role": "system", "content": "You are a helpful assistant."}]
 
 # Assume `videos` is a list of dictionaries, each representing a video
 videos = container.query_items(
     query=QUERY, enable_cross_partition_query=True
 )
 token= "?sp=r&st=2024-03-14T13:08:37Z&se=2024-08-13T20:08:37Z&spr=https&sv=2022-11-02&sr=c&sig=SSYTXamsqgvav3oqlEYrSw3tLBQOfE%2FjPeSkgKqq47M%3D"
+
+token= "?sp=r&st=2024-03-14T13:08:37Z&se=2024-08-13T20:08:37Z&spr=https&sv=2022-11-02&sr=c&sig=SSYTXamsqgvav3oqlEYrSw3tLBQOfE%2FjPeSkgKqq47M%3D"
+
+# Get the user's question about the content
+user_question = st.text_input("Ask a question about the content:")
 
 for video in videos:
     # Get the filename of the video
@@ -89,6 +105,23 @@ for video in videos:
     # Display a video player for the video
     st.video(url)
 
-#output = json.dumps(items, indent=True)
-#print("Result list\t", output)
-# </iterate_query_results>
+    # Get the content of the video
+    content = video['content']
+
+    # Display the content
+    #st.write(content)
+
+    if user_question:
+        # Add the user's question as a user message in the conversation
+        {"role": "system", "content": "אתה תקבל טקסט שמתאר סרטון וידאו עליך לענות על שאלות מתוך הטקטס'"},
+        conversation.append({"role": "user", "content": user_question+" "+content})
+
+        response = client.chat.completions.create(
+            model="gt4", # model = "deployment_name".
+            messages=conversation
+        )
+
+        conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+
+        # Display the assistant's response
+        st.write(response.choices[0].message.content)
