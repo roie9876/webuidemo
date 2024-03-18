@@ -12,32 +12,12 @@ from openai import AzureOpenAI
 import streamlit as st
 
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+import os
 
 # Create a BlobServiceClient object
 
 connection_string = os.getenv("BLOB_CONNECTION_STRING")
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-
-
-#upload file to blob 
-container_client_videoin = blob_service_client.get_container_client("videosin")
-
-# List all blobs in the container
-blob_list = container_client_videoin.list_blobs()
-
-# Display blobs in the UI
-for blob in blob_list:
-    st.write(blob.name)
-
-# File uploader widget
-uploaded_file = st.file_uploader("Choose a file")
-
-if uploaded_file is not None:
-    # Create a blob client for the uploaded file
-    blob_client = blob_service_client.get_blob_client("videosin", uploaded_file.name)
-
-    # Upload the file to the blob storage
-    blob_client.upload_blob(uploaded_file)
 
 
 
@@ -111,9 +91,9 @@ conversation=[{"role": "system", "content": "You are a helpful assistant."}]
 videos = container.query_items(
     query=QUERY, enable_cross_partition_query=True
 )
-token= "?sp=r&st=2024-03-14T13:08:37Z&se=2024-08-13T20:08:37Z&spr=https&sv=2022-11-02&sr=c&sig=SSYTXamsqgvav3oqlEYrSw3tLBQOfE%2FjPeSkgKqq47M%3D"
+token = os.getenv("TOKEN")
 
-token= "?sp=r&st=2024-03-14T13:08:37Z&se=2024-08-13T20:08:37Z&spr=https&sv=2022-11-02&sr=c&sig=SSYTXamsqgvav3oqlEYrSw3tLBQOfE%2FjPeSkgKqq47M%3D"
+
 
 # Get the user's question about the content
 user_question = st.text_input("Ask a question about the content:")
@@ -123,7 +103,8 @@ for video in videos:
     filename = video['filename']
 
     # Build the full URL of the video
-    url = 'https://roiestoragevision.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
+    url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
+    
 
     # Display the video details
     st.write(video)
