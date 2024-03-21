@@ -2,6 +2,7 @@
 #source .venv/bin/activate
 #pip3 install streamlit
 import os
+
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.cosmos.exceptions as exceptions
 from azure.cosmos.http_constants import StatusCodes
@@ -96,7 +97,7 @@ token = os.getenv("TOKEN")
 
 
 # Get the user's question about the content
-user_question = st.text_input("Ask a question about the content:")
+#user_question = st.text_input("Ask a question about the content:")
 
 for video in videos:
     # Get the filename of the video
@@ -132,3 +133,4 @@ for video in videos:
 
         # Display the assistant's response
         st.write(response.choices[0].message.content)
+        
