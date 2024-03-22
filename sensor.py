@@ -7,7 +7,7 @@ import datetime
 
 # define a video capture object
 vid = cv2.VideoCapture(0)
-
+location = "camera-3"
 # initialize frame variable
 frame1 = None
 
@@ -55,12 +55,13 @@ try:
         thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
         # if the frame has a considerable amount of difference then there is motion
-        if np.count_nonzero(thresh) > 5000:
+        if np.count_nonzero(thresh) > 500:
             # Resize the frame
             resized_frame = cv2.resize(frame, (desired_width, desired_height))
 
             # Get the current date and time
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            timestamp_location = f"{timestamp}, {location}"
 
             # Define the font and scale
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -72,7 +73,7 @@ try:
 
             # Add the timestamp to the frame
             # Add the timestamp to the frame
-            cv2.putText(resized_frame, timestamp, (10, 50), font, font_scale, color, thickness)
+            cv2.putText(resized_frame, timestamp_location, (10, 50), font, font_scale, color, thickness)
 
             # If the VideoWriter is not yet created, or if the counter has reached the limit, create a new one
             if 'out' not in locals() or counter >= frame_rate * duration:  # if 'out' is not yet defined or if counter has reached the limit
@@ -80,11 +81,23 @@ try:
                     out.release()
 
                     # Start a new thread to upload the file to Azure
-                    threading.Thread(target=upload_to_azure, args=(f'output{index-1}.mp4',)).start()
+                    threading.Thread(target=upload_to_azure, args=(filename,)).start()
+
+                # Define the codec and create VideoWriter object
+                # Convert the timestamp to a format suitable for a filename
+                timestamp_filename = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+
+                # Replace any special characters in the location that are not allowed in a filename
+                location_filename = location.replace("/", "_").replace("\\", "_").replace(":", "_").replace("*", "_").replace("?", "_").replace("\"", "_").replace("<", "_").replace(">", "_").replace("|", "_")
+
+                # Create the filename
+                filename = f"{location_filename}_{timestamp_filename}q_{index}.mp4"
 
                 # Define the codec and create VideoWriter object
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                out = cv2.VideoWriter(f'output{index}.mp4', fourcc, frame_rate, (desired_width, desired_height))
+                out = cv2.VideoWriter(filename, fourcc, frame_rate, (desired_width, desired_height))
+                #fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                #out = cv2.VideoWriter(f'output{index}.mp4', fourcc, frame_rate, (desired_width, desired_height))
 
                 # Reset the counter and increment the index
                 counter = 0
