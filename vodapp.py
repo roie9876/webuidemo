@@ -97,7 +97,7 @@ token = os.getenv("TOKEN")
 
 
 # Get the user's question about the content
-#user_question = st.text_input("Ask a question about the content:")
+user_question = st.text_input("Ask a question about the content:")
 
 for video in videos:
     # Get the filename of the video
@@ -121,7 +121,7 @@ for video in videos:
 
     if user_question:
         # Add the user's question as a user message in the conversation
-        {"role": "system", "content": "אתה תקבל טקסט שמתאר סרטון וידאו עליך לענות על שאלות מתוך הטקטס'"},
+        {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
         conversation.append({"role": "user", "content": user_question+" "+content})
 
         response = client.chat.completions.create(
