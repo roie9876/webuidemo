@@ -119,18 +119,18 @@ for video in videos:
     # Display the content
     #st.write(content)
 
-    if user_question:
-        # Add the user's question as a user message in the conversation
-        {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
-        conversation.append({"role": "user", "content": user_question+" "+content})
+    
+    # Add the user's question as a user message in the conversation
+    {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
+    conversation.append({"role": "user", "content": user_question+" "+content})
 
-        response = client.chat.completions.create(
-            model="gt4", # model = "deployment_name".
-            messages=conversation
+    response = client.chat.completions.create(
+    model="gt4-4v", # model = "deployment_name".
+    messages=conversation
         )
 
-        conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+    conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
-        # Display the assistant's response
-        st.write(response.choices[0].message.content)
+    # Display the assistant's response
+    st.write(response.choices[0].message.content)
         
