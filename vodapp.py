@@ -2,7 +2,7 @@
 #source .venv/bin/activate
 #pip3 install streamlit
 import os
-
+import re
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.cosmos.exceptions as exceptions
 from azure.cosmos.http_constants import StatusCodes
@@ -69,6 +69,14 @@ container = database.create_container_if_not_exists(
 # </create_container>
 
 # <build_query>
+#QUERY = "SELECT c.content, c.filename, c.shortdate FROM c"
+#results = container.query_items(
+#    query=QUERY, enable_cross_partition_query=True
+#)
+
+#items = [item for item in results]
+import re
+
 QUERY = "SELECT c.content, c.filename, c.shortdate FROM c"
 results = container.query_items(
     query=QUERY, enable_cross_partition_query=True
@@ -76,6 +84,12 @@ results = container.query_items(
 
 items = [item for item in results]
 
+# Filter items where 'DangerProbability[Num]' exists in 'content' and 'Num' is greater than 8
+filtered_items = []
+for item in items:
+    match = re.search(r'DangerProbability\[(\d+)\]', item['content'])
+    if match and int(match.group(1)) > 8:
+        filtered_items.append(item)
 
 
 
@@ -92,45 +106,81 @@ conversation=[{"role": "system", "content": "You are a helpful assistant."}]
 videos = container.query_items(
     query=QUERY, enable_cross_partition_query=True
 )
+
+
 token = os.getenv("TOKEN")
 
-
-
-# Get the user's question about the content
-user_question = st.text_input("Ask a question about the content:")
-
+filtered_videos = []
 for video in videos:
+    content = video['content']
+    match = re.search(r'DangerProbability\[(\d+)\]', content)
+    if match and int(match.group(1)) > 8:
+        filtered_videos.append(video)
+
+for video in filtered_videos:
     # Get the filename of the video
     filename = video['filename']
 
     # Build the full URL of the video
     url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
-    
 
     # Display the video details
-    st.write(video)
+    st.write(video)# Display a video player for the video
 
-    # Display a video player for the video
+    # Build the full URL of the video
+    url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
     st.video(url)
 
-    # Get the content of the video
-    content = video['content']
+#     # Add the user's question as a user message in the conversation
+#     {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
+#     conversation.append({"role": "user", "content": content})
 
-    # Display the content
-    #st.write(content)
+#     response = client.chat.completions.create(
+#     model="gpt-4v", # model = "deployment_name".
+#     messages=conversation
+#         )
+
+#     conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+
+#     # Display the assistant's response
+#     st.write(response.choices[0].message.content)
+
+
+# Get the user's question about the content
+#user_question = st.text_input("Ask a question about the content:")
+
+# for video in videos:
+#     # Get the filename of the video
+#     filename = video['filename']
+
+#     # Build the full URL of the video
+#     url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
+    
+
+#     # Display the video details
+#     st.write(video)
+
+#     # Display a video player for the video
+#     st.video(url)
+
+#     # Get the content of the video
+#     content = video['content']
+
+#     # Display the content
+#     #st.write(content)
 
     
-    # Add the user's question as a user message in the conversation
-    {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
-    conversation.append({"role": "user", "content": user_question+" "+content})
+#     # Add the user's question as a user message in the conversation
+#     {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
+#     conversation.append({"role": "user", "content": content})
 
-    response = client.chat.completions.create(
-    model="gt4-4v", # model = "deployment_name".
-    messages=conversation
-        )
+#     response = client.chat.completions.create(
+#     model="gpt-4v", # model = "deployment_name".
+#     messages=conversation
+#         )
 
-    conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+#     conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
-    # Display the assistant's response
-    st.write(response.choices[0].message.content)
+#     # Display the assistant's response
+#     st.write(response.choices[0].message.content)
         
