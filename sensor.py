@@ -94,7 +94,7 @@ try:
                 filename = f"{location_filename}_{timestamp_filename}q_{index}.mp4"
 
                 # Define the codec and create VideoWriter object
-                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                fourcc = cv2.VideoWriter_fourcc(*'H264')
                 out = cv2.VideoWriter(filename, fourcc, frame_rate, (desired_width, desired_height))
                 #fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                 #out = cv2.VideoWriter(f'output{index}.mp4', fourcc, frame_rate, (desired_width, desired_height))
