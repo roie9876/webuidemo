@@ -117,7 +117,34 @@ for video in videos:
     if match and int(match.group(1)) > 8:
         filtered_videos.append(video)
 
+# Initialize an empty string
+aggregated_content = ""
+
 for video in filtered_videos:
+     # Append the video's content to the aggregated_content string
+    aggregated_content += video['content'] + " "
+ 
+
+# Add the user's question as a user message in the conversation
+conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
+conversation.append({"role": "user", "content": aggregated_content})
+
+response = client.chat.completions.create(
+model="gpt-4-32k", # model = "deployment_name".
+
+messages=conversation,
+temperature=0
+         )
+
+# Append the assistant's response to the conversation
+conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+
+st.write(response.choices[0].message.content)
+
+
+for video in filtered_videos:
+     # Append the video's content to the aggregated_content string
+    aggregated_content += video['content'] + " "
     # Get the filename of the video
     filename = video['filename']
 
@@ -130,57 +157,3 @@ for video in filtered_videos:
     # Build the full URL of the video
     url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
     st.video(url)
-
-#     # Add the user's question as a user message in the conversation
-#     {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
-#     conversation.append({"role": "user", "content": content})
-
-#     response = client.chat.completions.create(
-#     model="gpt-4v", # model = "deployment_name".
-#     messages=conversation
-#         )
-
-#     conversation.append({"role": "assistant", "content": response.choices[0].message.content})
-
-#     # Display the assistant's response
-#     st.write(response.choices[0].message.content)
-
-
-# Get the user's question about the content
-#user_question = st.text_input("Ask a question about the content:")
-
-# for video in videos:
-#     # Get the filename of the video
-#     filename = video['filename']
-
-#     # Build the full URL of the video
-#     url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
-    
-
-#     # Display the video details
-#     st.write(video)
-
-#     # Display a video player for the video
-#     st.video(url)
-
-#     # Get the content of the video
-#     content = video['content']
-
-#     # Display the content
-#     #st.write(content)
-
-    
-#     # Add the user's question as a user message in the conversation
-#     {"role": "system", "content": "האם יש קשר בין האירועים שמופיעים בטקסטים השונים"},
-#     conversation.append({"role": "user", "content": content})
-
-#     response = client.chat.completions.create(
-#     model="gpt-4v", # model = "deployment_name".
-#     messages=conversation
-#         )
-
-#     conversation.append({"role": "assistant", "content": response.choices[0].message.content})
-
-#     # Display the assistant's response
-#     st.write(response.choices[0].message.content)
-        
