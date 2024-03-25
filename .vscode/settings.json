@@ -31,5 +31,6 @@
         ".vscode{,/**}"
     ],
     "appService.defaultWebAppToDeploy": "/subscriptions/8b7bded7-7120-4491-a1c9-c3a0bc3a78df/resourceGroups/openai/providers/Microsoft.Web/sites/voduidemo",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.showBuildDuringDeployPrompt": false
 }
