@@ -8,7 +8,7 @@ import azure.cosmos.exceptions as exceptions
 from azure.cosmos.http_constants import StatusCodes
 from azure.cosmos.partition_key import PartitionKey
 from azure.cosmos import CosmosClient, PartitionKey
-
+import openai
 from openai import AzureOpenAI
 import streamlit as st
 
