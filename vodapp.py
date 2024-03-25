@@ -88,7 +88,7 @@ items = [item for item in results]
 filtered_items = []
 for item in items:
     match = re.search(r'DangerProbability\[(\d+)\]', item['content'])
-    if match and int(match.group(1)) > 8:
+    if match and int(match.group(1)) > 5:
         filtered_items.append(item)
 
 
@@ -114,7 +114,7 @@ filtered_videos = []
 for video in videos:
     content = video['content']
     match = re.search(r'DangerProbability\[(\d+)\]', content)
-    if match and int(match.group(1)) > 6:
+    if match and int(match.group(1)) > 5:
         filtered_videos.append(video)
 
 # Initialize an empty string
@@ -125,21 +125,21 @@ for video in filtered_videos:
     aggregated_content += video['content'] + " "
  
 
-# Add the user's question as a user message in the conversation
-conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
-conversation.append({"role": "user", "content": aggregated_content})
+# # Add the user's question as a user message in the conversation
+# conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
+# conversation.append({"role": "user", "content": aggregated_content})
 
-response = client.chat.completions.create(
-model="gpt-4-32k", # model = "deployment_name".
+# response = client.chat.completions.create(
+# model="gpt-4-32k", # model = "deployment_name".
 
-messages=conversation,
-temperature=0
-         )
+# messages=conversation,
+# temperature=0
+#          )
 
-# Append the assistant's response to the conversation
-conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+# # Append the assistant's response to the conversation
+# conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
-st.write(response.choices[0].message.content)
+# st.write(response.choices[0].message.content)
 
 
 for video in filtered_videos:
