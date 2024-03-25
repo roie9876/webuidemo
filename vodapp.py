@@ -114,7 +114,7 @@ filtered_videos = []
 for video in videos:
     content = video['content']
     match = re.search(r'DangerProbability\[(\d+)\]', content)
-    if match and int(match.group(1)) > 8:
+    if match and int(match.group(1)) > 6:
         filtered_videos.append(video)
 
 # Initialize an empty string

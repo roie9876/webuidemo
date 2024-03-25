@@ -7,7 +7,7 @@ import datetime
 
 # define a video capture object
 vid = cv2.VideoCapture(0)
-location = "camera-3"
+location = "camera-2"
 # initialize frame variable
 frame1 = None
 
