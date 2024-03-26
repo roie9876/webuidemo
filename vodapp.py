@@ -89,7 +89,7 @@ items = [item for item in results]
 filtered_items = []
 for item in items:
     match = re.search(r'DangerProbability\[(\d+)\]', item['content'])
-    if match and int(match.group(1)) > 5:
+    if match and int(match.group(1)) > 3:
         filtered_items.append(item)
 
 
@@ -115,7 +115,7 @@ filtered_videos = []
 for video in videos:
     content = video['content']
     match = re.search(r'DangerProbability\[(\d+)\]', content)
-    if match and int(match.group(1)) > 5:
+    if match and int(match.group(1)) > 3:
         filtered_videos.append(video)
 
 # Initialize an empty string
