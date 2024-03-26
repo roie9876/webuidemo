@@ -140,7 +140,8 @@ temperature=0
 # Append the assistant's response to the conversation
 conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
-st.write(response.choices[0].message.content)
+#st.write(response.choices[0].message.content)
+st.markdown(f'<div style="background-color:yellow;">{response.choices[0].message.content}</div>', unsafe_allow_html=True)
 
 
 for video in filtered_videos:
