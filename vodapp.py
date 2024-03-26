@@ -9,7 +9,7 @@ from azure.cosmos.http_constants import StatusCodes
 from azure.cosmos.partition_key import PartitionKey
 from azure.cosmos import CosmosClient, PartitionKey
 #import openai
-#from openai import AzureOpenAI
+from openai import AzureOpenAI
 import streamlit as st
 import urllib.parse
 
@@ -95,13 +95,13 @@ for item in items:
 
 
 
-# client = AzureOpenAI(
-#   api_key = os.getenv("AZURE_OPENAI_API_KEY"),  
-#   api_version = "2023-05-15",
-#   azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")  # Your Azure OpenAI resource's endpoint value.
-# )
+client = AzureOpenAI(
+  api_key = os.getenv("AZURE_OPENAI_API_KEY"),  
+  api_version = "2023-05-15",
+  azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")  # Your Azure OpenAI resource's endpoint value.
+)
 
-# conversation=[{"role": "system", "content": "You are a helpful assistant."}]
+conversation=[{"role": "system", "content": "You are a helpful assistant."}]
 
 # Assume `videos` is a list of dictionaries, each representing a video
 videos = container.query_items(
@@ -126,21 +126,21 @@ for video in filtered_videos:
     aggregated_content += video['content'] + " "
  
 
-# # Add the user's question as a user message in the conversation
-# conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
-# conversation.append({"role": "user", "content": aggregated_content})
+# Add the user's question as a user message in the conversation
+conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
+conversation.append({"role": "user", "content": aggregated_content})
 
-# response = client.chat.completions.create(
-# model="gpt-4-32k", # model = "deployment_name".
+response = client.chat.completions.create(
+model="gpt-4-32k", # model = "deployment_name".
 
-# messages=conversation,
-# temperature=0
-#          )
+messages=conversation,
+temperature=0
+         )
 
-# # Append the assistant's response to the conversation
-# conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+# Append the assistant's response to the conversation
+conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
-# st.write(response.choices[0].message.content)
+st.write(response.choices[0].message.content)
 
 
 for video in filtered_videos:
