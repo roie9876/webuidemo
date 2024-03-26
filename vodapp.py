@@ -11,6 +11,7 @@ from azure.cosmos import CosmosClient, PartitionKey
 #import openai
 #from openai import AzureOpenAI
 import streamlit as st
+import urllib.parse
 
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import os
@@ -147,7 +148,7 @@ for video in filtered_videos:
     aggregated_content += video['content'] + " "
     # Get the filename of the video
     filename = video['filename']
-
+    filename = urllib.parse.quote(filename)
     # Build the full URL of the video
     url = 'https://videostoragedemo.blob.core.windows.net/videosprocessed/reviewfordamage/' + filename + token
 
