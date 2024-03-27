@@ -85,11 +85,21 @@ results = container.query_items(
 
 items = [item for item in results]
 
+
+# Create a dropdown box with options from 1 to 10
+# selected_number = st.selectbox(
+#     'תציג אירועים עם סיכון גדול מהערך שרשום פה,סיכון עם ערך נמוך משמע אין סיכון', 
+#     list(range(0, 11)), 
+#     index=9  # Set the default selected option to the 10th option (zero-based index)
+#)
+
 # Filter items where 'DangerProbability[Num]' exists in 'content' and 'Num' is greater than 8
 filtered_items = []
 for item in items:
     match = re.search(r'DangerProbability\[(\d+)\]', item['content'])
-    if match and int(match.group(1)) > 3:
+    # Use the selected number in your condition
+    if match and int(match.group(1)) > 0: 
+    
         filtered_items.append(item)
 
 
@@ -115,7 +125,7 @@ filtered_videos = []
 for video in videos:
     content = video['content']
     match = re.search(r'DangerProbability\[(\d+)\]', content)
-    if match and int(match.group(1)) > 3:
+    if match and int(match.group(1)) > 0: 
         filtered_videos.append(video)
 
 # Initialize an empty string
@@ -126,22 +136,43 @@ for video in filtered_videos:
     aggregated_content += video['content'] + " "
  
 
+# Create a text input box with a default value
+
+# Create a larger text input box with a default value
+user_input = st.text_area('איזו זיהו וקורולציה תרצה לבצע בין הסרטונים לדוגמא:', 'אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי תאריך ושעה, שם מצלמה, תיאור של האנשים אשר מופיעים בתיאור הטקסט ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון')
+
+# Create a submit button
+if st.button('Submit'):
+    # Add the user's question as a user message in the conversation
+    conversation =[{"role": "system", "content":user_input }]
+    conversation.append({"role": "user", "content": aggregated_content})
+
+    response = client.chat.completions.create(
+        model="gpt-4-32k", # model = "deployment_name".
+        messages=conversation,
+        temperature=0
+    )
+    conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+    st.markdown(f'<div style="background-color:yellow;">{response.choices[0].message.content}</div>', unsafe_allow_html=True)
+    
+    
+
+
+
 # Add the user's question as a user message in the conversation
-conversation =[{"role": "system", "content":"״אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי סמיכות זמנים, מקום, תיאור האירוע ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
-conversation.append({"role": "user", "content": aggregated_content})
+# conversation =[{"role": "system", "content":"אתה עומד לקבל טקסטים ממספר אירועים שונים, כל אירוע יכול להיות עצמאי או קשור לאירוע אחר. האירועים הם תיעוד שמגיע ממצלמות שונות ומיקומים שונים, עליך לקבוע האם יש קשר בין האירועים על פי תאריך ושעה, שם מצלמה, תיאור של האנשים אשר מופיעים בתיאור הטקסט ולעשות הערכת מצב. במידה ואתה מזהה שיש קשר בין האירועים תסביר מדוע ומה צריך לעשות על מנת להפחית את הסיכון" }]
+# conversation.append({"role": "user", "content": user_input})
 
-response = client.chat.completions.create(
-model="gpt-4-32k", # model = "deployment_name".
+# response = client.chat.completions.create(
+# model="gpt-4-32k", # model = "deployment_name".
 
-messages=conversation,
-temperature=0
-         )
+
 
 # Append the assistant's response to the conversation
-conversation.append({"role": "assistant", "content": response.choices[0].message.content})
+#conversation.append({"role": "assistant", "content": response.choices[0].message.content})
 
 #st.write(response.choices[0].message.content)
-st.markdown(f'<div style="background-color:yellow;">{response.choices[0].message.content}</div>', unsafe_allow_html=True)
+#st.markdown(f'<div style="background-color:yellow;">{response.choices[0].message.content}</div>', unsafe_allow_html=True)
 
 
 for video in filtered_videos:
